@@ -20,6 +20,22 @@ def log(s):
         f.write(s + "\n")
 
 
+def generate_ground_truth_list():
+    count = 0
+    ground_truth_list = []
+    for i in range(1, 10):
+        print(i)
+        f = open("./p1/raw_" + str(i) + ".txt", 'r').readlines()
+        c = len(f)
+        l = [i] * (c - count)
+        print(len(l))
+        ground_truth_list += l
+        count = c
+    arr = np.array([ground_truth_list])
+    print(arr.shape)
+    np.savetxt("./p1/p1_ground_truth.txt", arr)
+
+
 if __name__ == "__main__":
     number_data = [get_img_list(1),
                    get_img_list(2),
@@ -50,7 +66,7 @@ if __name__ == "__main__":
                 number_raw_list = np.vstack((number_raw_list, raw))
             count = count + 1
 
-        np.savetxt("./classify_rlt/p1/" + str(number) + "/raw_" + str(number) + ".txt", raw_list)
+        np.savetxt("./classify_rlt/p1/" + str(number) + "/raw_" + str(number) + ".txt", number_raw_list)
         log("Number " + str(number) + " end : " + str(count - 1))
         log("Number " + str(number) + " len : " + str(len(img_list)))
         log("----------------------------------------------------")

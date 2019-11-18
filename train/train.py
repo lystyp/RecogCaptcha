@@ -7,12 +7,13 @@ import tensorflow as tf
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = '2'
 
 
-num_epochs = ㄓㄢ
-batch_size = 50
+num_epochs = 100
+batch_size = 100
 learning_rate = 0.001
 
-path = "../classify_rlt/p2/"
-name_p = "p2"
+path = "../classify_rlt/p4/"
+name_p = "p4"
+
 
 class DATALoader():
     def __init__(self):
@@ -20,7 +21,7 @@ class DATALoader():
         self.train_label = self.get_ground_truth_list()
 
         self.train_data = self.train_data.astype(np.float32) / 255.0      # [60000, 28, 28, 1]
-        self.train_label = self.train_label.astype(np.int32)    # [60000]
+        self.train_label = self.train_label.astype(np.int32)     # [60000]
         self.num_train_data = self.train_data.shape[0]
 
     def get_batch(self, batch_size):
@@ -38,7 +39,8 @@ class DATALoader():
 class MLP(tf.keras.Model):
     def __init__(self):
         super().__init__()
-        self.dense1 = tf.keras.layers.Dense(units=100, activation=tf.nn.relu)
+        self.dense1 = tf.keras.layers.Dense(units=500, activation=tf.nn.relu)
+        self.dense1 = tf.keras.layers.Dense(units=500, activation=tf.nn.relu)
         self.dense2 = tf.keras.layers.Dense(units=10)
 
     @tf.function
@@ -50,24 +52,14 @@ class MLP(tf.keras.Model):
 
 
 if __name__ == "__main__":
-    data_loader = DATALoader()
     print("Start")
-    n = 0
-    for i in data_loader.train_data:
-        print(data_loader.train_label[n])
-        cv2.imshow("asd", i.reshape(45, 22))
-        n = n + 1
-
-
-
-
-    input("PAUSE")
     t_start = time.time()
 
     model = MLP()
     data_loader = DATALoader()
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
     num_batches = int(data_loader.num_train_data // batch_size * num_epochs)
+    print("num_batches = " + str(num_batches))
     for batch_index in range(num_batches):
         X, y = data_loader.get_batch(batch_size)
         with tf.GradientTape() as tape:
@@ -80,5 +72,6 @@ if __name__ == "__main__":
 
     print("End")
     print(time.time() - t_start)
-    tf.saved_model.save(model, path + "model/")
+    model.predict(np.array([data_loader.train_data[0]]))
+    tf.keras.models.save_model(model, path + "model/")
 

@@ -3,13 +3,16 @@ import os
 import numpy as np
 import cv2
 
+data_path = "../classify_rlt/p4/"
+
 
 def get_img_list(n):
-    path = "./classify_rlt/p1/" + str(n) + "/"
+    path = data_path + str(n) + "/"
     name_list = os.listdir(path)
     l = []
     for img_name in name_list:
-        l.append(cv2.imread(path + img_name, cv2.IMREAD_GRAYSCALE))
+        if ".png" in img_name:
+            l.append(cv2.imread(path + img_name, cv2.IMREAD_GRAYSCALE))
     print("Load " + str(n) + " finish.")
     return l
 
@@ -20,24 +23,9 @@ def log(s):
         f.write(s + "\n")
 
 
-def generate_ground_truth_list():
-    count = 0
-    ground_truth_list = []
-    for i in range(1, 10):
-        print(i)
-        f = open("./p1/raw_" + str(i) + ".txt", 'r').readlines()
-        c = len(f)
-        l = [i] * (c - count)
-        print(len(l))
-        ground_truth_list += l
-        count = c
-    arr = np.array([ground_truth_list])
-    print(arr.shape)
-    np.savetxt("./p1/p1_ground_truth.txt", arr)
-
-
 if __name__ == "__main__":
-    number_data = [get_img_list(1),
+    number_data = [get_img_list(0),
+                   get_img_list(1),
                    get_img_list(2),
                    get_img_list(3),
                    get_img_list(4),
@@ -48,8 +36,9 @@ if __name__ == "__main__":
                    get_img_list(9)]
 
     raw_list = None
+    ground_truth_list = []
     count = 0
-    number = 1
+    number = 0
     for img_list in number_data:
         number_raw_list = None
         log("Number " + str(number) + " start : " + str(count))
@@ -66,9 +55,11 @@ if __name__ == "__main__":
                 number_raw_list = np.vstack((number_raw_list, raw))
             count = count + 1
 
-        np.savetxt("./classify_rlt/p1/" + str(number) + "/raw_" + str(number) + ".txt", number_raw_list)
+        np.savetxt(data_path + str(number) + "/raw_" + str(number) + ".txt", number_raw_list)
+        ground_truth_list = ground_truth_list + [number] * number_raw_list.shape[0]
         log("Number " + str(number) + " end : " + str(count - 1))
         log("Number " + str(number) + " len : " + str(len(img_list)))
         log("----------------------------------------------------")
         number = number + 1
-    np.savetxt("./classify_rlt/p1/p1_raw_data.txt", raw_list)
+    np.savetxt(data_path + "p4_raw_data.txt", raw_list)
+    np.savetxt(data_path + "p4_ground_truth.txt", np.array(ground_truth_list))
